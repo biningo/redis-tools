@@ -33,7 +33,9 @@ class RedisBigKeyClient:
         sub_keys = self.client.lrange(self.__chunk_meta_key(key), 0, -1)
         if not sub_keys:
             return None
-        sub_values = self.client.mget(sub_keys)
+        sub_values = []
+        for sub_key in sub_keys:
+            sub_values.append(self.client.get(sub_key))
         return b''.join(sub_values).decode() if all(sub_values) else None
 
     def delete(self, key):
